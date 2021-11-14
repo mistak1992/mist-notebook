@@ -1,28 +1,28 @@
-#ffmpeg格式转换裁剪记录
-##前言
+# ffmpeg格式转换裁剪记录
+## 前言
 因公司项目有需求做格式转换，且需要所集成的SDK较小，故有本记录。
 附：需要集成完整ffmpeg库的请移步[ffmpeg-kit](https://github.com/tanersener/ffmpeg-kit)
-##0x00编译
+## 0x00编译
 因为需要做裁剪，所以我们要从编译开始
-###环境
+### 环境
 我是在macOS下操作，使用脚本[FFmpeg-iOS-build-script](https://github.com/kewlbear/FFmpeg-iOS-build-script)
-####yasm
+#### yasm
 另外需要安装`yasm`
 ```
 brew install yasm
 ```
-####gas-preprocessor
-#####获取
+#### gas-preprocessor
+##### 获取
 1.从github[下载](https://github.com/yuvi/gas-preprocessor )
 2.从ffmpeg项目中[获取](https://github.com/FFmpeg/gas-preprocessor)
-#####安装
+##### 安装
 1.把里边的 `gas-preprocessor.pl` 文件放入 `/usr/local/bin` 里
 2.修改文件权限为读和写
 3.terminal输入`which gas-preprocessor.pl`可见以下输出即可
 ```
 /usr/local/bin/gas-preprocessor.pl
 ```
-###开工
+### 开工
 1.将项目[FFmpeg-iOS-build-script](https://github.com/kewlbear/FFmpeg-iOS-build-script) clone到本地
 ```
 git clone git@github.com:kewlbear/FFmpeg-iOS-build-script.git
@@ -42,10 +42,10 @@ CONFIGURE_FLAGS="--enable-cross-compile --disable-debug --disable-programs \
 ```
 ./build-ffmpeg.sh x86_64
 ```
-##0x01组装
-###iOS项目
-####1.新建iOS项目
-####2.添加依赖库
+## 0x01组装
+### iOS项目
+#### 1.新建iOS项目
+#### 2.添加依赖库
 找到项目的`Target` > `General` > `Frameworks,Libraries,and Embedded Content`，依次点击`+`号，添加以下依赖
 ```
 AudioToolbox.framework
@@ -56,7 +56,7 @@ libiconv.tbd
 libbz2.tbd
 libz.tbd
 ```
-####3.项目库结构
+#### 3.项目库结构
 在项目新建文件夹ffmpeg用于存放库文件,结构如下
 ```shell
 ├── ffmpegDemo # 项目根目录
@@ -83,7 +83,7 @@ $(PROJECT_DIR)/ffmpegDemo/ffmpeg/lib
 
 >如果想要使用Tool工具来调用 FFmpg 的话，就是直接通过调用传参的方式执行ffmpeg 命令的话，就需要导入对应的文件。
 
-####fftools
+#### fftools
 a.可以在`ffmpeg`项目中找到`fftools`文件夹
 b.可以在编译脚本的目录下`ffmpeg-4.3.1`文件夹中找到`fftools`文件夹
 * 将`fftools`文件夹中的以下文件拷贝到项目库文件夹`fftools`中
@@ -101,9 +101,9 @@ ffmpeg_videotoolbox.c
 ```
 config.h
 ```
-####注释
+#### 注释
 注释掉一下文件
-#####cmdutils.c
+##### cmdutils.c
 ```
 #include "compat/va_copy.h"
 #include "libavresample/avresample.h"
@@ -111,13 +111,13 @@ config.h
 
 PRINT_LIB_INFO(avresample, AVRESAMPLE, flags, level);
 ```
-#####ffmpeg.h
+##### ffmpeg.h
 
-#####ffmpeg_filter.c 
+##### ffmpeg_filter.c 
 ```
 #include "libavresample/avresample.h"
 ```
-#####ffmpeg.c
+##### ffmpeg.c
 ```
 #include "libavutil/internal.h"
 #include "libavutil/libm.h"
@@ -130,14 +130,14 @@ ost->forced_keyframes_expr_const_values[FKF_T],
 ost->forced_keyframes_expr_const_values[FKF_PREV_FORCED_T],
 res);
 ```
-####头文件
+#### 头文件
 基本原则是，`libavcodec`,`libavfilter`,`libavformat`,`libavutil`这四个库缺少什么头文件，就去编译脚本的目录下`ffmpeg-4.3.1`文件夹中找对应库名称的文件夹，将头文件复制到项目库文件夹include/对应的库文件名之下。
 例如：
 ```C
 #include "libavcodec/mathops.h" // 报错找不到
 ```
 就去`ffmpeg-4.3.1`中找到`libavcodec`文件夹，并在文件夹中找到`mathops.h`复制到项目库文件夹`libavcodec/`中
-##优化
+## 优化
 * 避免main函数重复
 ```C
 // ffmpeg.h 文件下增加函数声明:
@@ -163,7 +163,7 @@ term_exit()
 ```
 // 在 ffmpeg.c把所有调用 exit_program 函数 ，改为调用 ffmpeg_cleanup 函数就可以了。
 ```
-##调用
+## 调用
 >目前为止，我们做完上面所有步骤后，我们已经可以调用 FFmpeg Tool 进行各种音视频操作了，例如视频合成、视频转Gif、视频帧操作、视频特效、格式转换，视频调速，等各种操作了。Demo里面实现了本文提到的视频转码功能。
 
 >Demo的代码套用网上现有，跟业务相关的需要自己修改。
@@ -206,7 +206,7 @@ term_exit()
     ffmpeg_main(argc,argv);
 }
 ```
-###获取转码进度
+### 获取转码进度
 * 打开视频源时获取总时长
 ```C
 ffmpeg_opt.c

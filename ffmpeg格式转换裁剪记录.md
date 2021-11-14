@@ -66,7 +66,7 @@ libz.tbd
 │   │   └── lib # 用于存放库文件
 ```
 将编译脚本中的thin文件中的文件复制到对应的库文件夹,`include`与`lib`一一对应
-####4.配置项目搜索路径
+#### 4.配置项目搜索路径
 因为项目编译的是静态库与头文件，因此，需要设置好头文件搜索路径和静态库文件搜索路径
 * 找到项目的`Target` > `Build Settings` > `Header Search Paths`新增一项填入include文件夹的路径，如我的:
 ```
@@ -76,7 +76,7 @@ $(SRCROOT)
 ```
 $(PROJECT_DIR)/ffmpegDemo/ffmpeg/lib
 ```
-##0x02调用
+## 0x02调用
 以下引用自[（五）利用FFmpeg 命令行fftools转码视频](https://www.jianshu.com/p/822c138251a8)
 
 >到这一步其实已经可以使用library库了，如果要对音视频进行操作，需要手动写C++代码去调用 API 使用FFmpeg。你可以导入 #import "avformat.h" 在代码中 写 av_register_all() 然后进行编译，如果没有报错，代表编译成功。av_register_all() 目前版本已经弃用，只是做测试。
